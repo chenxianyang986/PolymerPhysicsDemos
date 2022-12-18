@@ -2,7 +2,7 @@ import numpy as np
 from utils import F_mix_s
 import matplotlib.pyplot as plt
 import argparse
-from phase_solve import find_guesses_for_common_tangents, find_binodal_points
+from phase_solve import find_guesses_for_common_tangents, find_binodal_points, find_spinodal_points
 k = 1.3807 * 10 ** -23
 
 def run():
@@ -48,9 +48,12 @@ def test_1(T):
         guesses_yvalue.append(F_mix(i, NA, NB, chi, k*T))
     plt.plot(guesses, guesses_yvalue, 'o', label="transitional points")
     '''
-    plt.plot([binodal_points[0], binodal_points[1]], [F_mix_s(binodal_points[0], NA, NB, chi, k*T), F_mix_s(binodal_points[1], NA, NB, chi, k*T)], 'o-', label="common tangent line")
-    plt.legend()
-    plt.show()
+    spinodal_points = find_spinodal_points(NA, NB, chi, k*T)
+    if np.array_equal(binodal_points, np.zeros((1, 4))) == False:
+        plt.plot([binodal_points[0], binodal_points[1]], [F_mix_s(binodal_points[0], NA, NB, chi, k*T), F_mix_s(binodal_points[1], NA, NB, chi, k*T)], 'o-', label="common tangent line")
+        plt.plot([spinodal_points[0], spinodal_points[1]], [F_mix_s(spinodal_points[0], NA, NB, chi, k*T), F_mix_s(spinodal_points[1], NA, NB, chi, k*T)], '.', label="spinodal pts")
+        plt.legend()
+        plt.show()
 
 def test_2(T):
     if T < 400 or T > 460:
@@ -68,9 +71,12 @@ def test_2(T):
     input_guesses_y = [F_mix_s(i, NA, NB, chi, k*T) for i in guesses]
     input_guesses = tuple(guesses + input_guesses_y)
     binodal_points = find_binodal_points(NA, NB, chi, k*T, input_guesses)
-    plt.plot([binodal_points[0], binodal_points[1]], [F_mix_s(binodal_points[0], NA, NB, chi, k*T), F_mix_s(binodal_points[1], NA, NB, chi, k*T)], 'o-', label="common tangent line")
-    plt.legend()
-    plt.show()
+    spinodal_points = find_spinodal_points(NA, NB, chi, k*T)
+    if np.array_equal(binodal_points, np.zeros((1, 4))) == False:
+        plt.plot([binodal_points[0], binodal_points[1]], [F_mix_s(binodal_points[0], NA, NB, chi, k*T), F_mix_s(binodal_points[1], NA, NB, chi, k*T)], 'o-', label="common tangent line")
+        plt.plot([spinodal_points[0], spinodal_points[1]], [F_mix_s(spinodal_points[0], NA, NB, chi, k*T), F_mix_s(spinodal_points[1], NA, NB, chi, k*T)], '.', label="spinodal pts")
+        plt.legend()
+        plt.show()
 
 def test_3(T):
     if T < 240 or T > 700:

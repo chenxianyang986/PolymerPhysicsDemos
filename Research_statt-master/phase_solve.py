@@ -22,21 +22,44 @@ def find_guesses_for_common_tangents(NA, NB, chi, kT, range=(0.01, 0.99), number
     for i in solminIdx + solmaxIdx:
       if xval[i] < xval[sec_deriv_min]:
         value = xval[zero_deriv_solminIdx[0]] if len(zero_deriv_solminIdx) == 1 and zero_deriv_solminIdx < sec_deriv_min else 0.01
+        '''
+        if value == 0.01:
+          sol.append((xval[i]*3 + value)/4)
+        else:
+          sol.append((xval[i]*3 + value)/4)
+        '''
         sol.append((xval[i] + value)/2)
       else:
         value = xval[zero_deriv_solminIdx[0]] if len(zero_deriv_solminIdx) == 1 and zero_deriv_solminIdx > sec_deriv_min else 0.99
+        '''
+        if value == 0.01:
+          sol.append((xval[i]*3 + value)/4)
+        else:
+          sol.append((xval[i]*3 + value)/4)
+        '''
         sol.append((xval[i] + value)/2)
-    
+    '''
     if len(sol) == 0:
       value = int((sec_deriv_min[0] -zero_deriv_solminIdx[0]) / 2)
       sol.append(xval[sec_deriv_min[0]+value])
       sol.append(xval[sec_deriv_min[0]-value])
-    
+    '''
   else:
     for i in zero_deriv_solminIdx:
       sol.append(xval[i])
   return sol
 
+def find_spinodal_points(NA, NB, chi, kT, range=(0.01, 0.99), number_of_points=1001):
+  xval = np.linspace(range[0], range[1], number_of_points)
+  yval = []
+  sol = []
+  for i in xval:
+    yval.append(d_F_mix_s(i, NA, NB, chi, kT))
+  sec_deriv_min, sec_deriv_max = findLocalMaximaMinima(len(yval), yval)
+  for i in sec_deriv_min+sec_deriv_max:
+    sol.append(xval[i])
+  return sol
+  
 def find_binodal_points(NA, NB, chi, kT, guesses):
   # guesses is in form of (x1, x2, y1, y2)
   x1 = Symbol('x1')
@@ -56,6 +79,8 @@ def find_binodal_points(NA, NB, chi, kT, guesses):
     except:
       ans = guesses
   else:
-    print("Solution is incorrect")
+    print("Warning! no binodal points at this temperature")
+    return []
+    
   return ans
 
