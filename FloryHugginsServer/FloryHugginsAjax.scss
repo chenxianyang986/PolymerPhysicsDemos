@@ -1,0 +1,57 @@
+.graphs {
+    background-color: antiquewhite;
+    align-content: space-around;
+}
+
+
+.app_controls {
+    width: 600px;
+    border: 3px rgb(86, 10, 10) solid;
+    padding: 9px;
+    display: block;
+}
+
+.na1 {
+    display: inline-block;
+    size: 60%;
+    
+}
+
+.na2 {
+    display: inline-block;
+}
+
+.na3 {
+    display: inline-block;
+}
+
+
+@media screen and (max-width: 800px) {
+    .graphs {
+        background-color: antiquewhite;
+        align-content: space-around;
+    }
+    
+    
+    .app_controls {
+        width: 300px;
+        border: 3px rgb(86, 10, 10) solid;
+        padding: 9px;
+        display: block;
+    }
+    
+    .na1 {
+        display: inline-block;
+        size: 60%;
+        
+    }
+    
+    .na2 {
+        display: inline-block;
+    }
+    
+    .na3 {
+        display: inline-block;
+    }
+    
+}

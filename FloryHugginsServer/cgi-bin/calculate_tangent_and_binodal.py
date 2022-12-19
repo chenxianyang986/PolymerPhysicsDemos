@@ -29,7 +29,7 @@ def solve_for_tangent_and_binodal(NA, NB, chi, kT):
         (x1,x2,y1,y2),(0.01,0.99,-0.01,-0.01))
         tangent=[float(sol[0]),float(sol[1]),float(sol[2]),float(sol[3])]
     except:
-        tangent=[float("nan"),float("nan"),float("nan"),float("nan")]
+        tangent=["nan", "nan", "nan", "nan"]
 
     try:
         sol = nsolve((
@@ -40,7 +40,7 @@ def solve_for_tangent_and_binodal(NA, NB, chi, kT):
         (x1,x2,y1,y2),(1./4.,3./4.,-0.01,-0.01))
         binodal=[float(sol[0]),float(sol[1]),float(sol[2]),float(sol[3])]
     except:
-        binodal=[float("nan"),float("nan"),float("nan"),float("nan")]
+        binodal=["nan","nan", "nan", "nan"]
 
     return [tangent, binodal]
 
