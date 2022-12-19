@@ -6,11 +6,19 @@ k = 1.3807 * 10 ** -23
 eps = np.finfo(np.float64).eps
 
 def main():
-    T = np.linspace(200, 350, 50)
+    
+    T = np.append(np.linspace(200, 340, 20), np.linspace(340, 345, 30))
     x = np.linspace(0.01, 0.99, 1001)
-    NA = 200
-    NB = 100
+    NA = 100
+    NB = 200
     chi_values = 5/T
+    '''
+    T = np.append(np.linspace(438.9, 439.4, 40), np.linspace(439.4, 450, 30))
+    x = np.linspace(0.01, 0.99, 1001)
+    NA = 6000
+    NB = 5000
+    chi_values = -7.74/T + 0.018
+    '''
     bpts = []
     spts = []
     for i in range(len(chi_values)):
@@ -26,11 +34,10 @@ def main():
     plt_bpts = np.array(bpts, dtype=object)
     plt_spts = np.array(spts, dtype=object)
     
-    print(plt_bpts)
     a = np.array(plt_bpts[:, 0], dtype=np.float64)
     b = np.array(plt_bpts[:, 1], dtype=np.float64)
     
-    z = np.polyfit(a, b, 2, rcond = len(x)*eps)
+    z = np.polyfit(a, b, 10, rcond = len(x)*eps)
     p = np.poly1d(z)
     
     plt.plot(a, b, '.', x, p(x), '--', label="binodal points")
