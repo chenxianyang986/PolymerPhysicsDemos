@@ -12,11 +12,20 @@ serverPort = 8000
 class MyServer(SimpleHTTPRequestHandler):
     def do_POST(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
+        self.send_header("Content-type", "application/json")
         self.end_headers()
-        print("get here!")
+        length = int(self.headers['Content-Length'])
+        params = json.loads(self.rfile.read(length))
+        result = solve_for_tangent_and_binodal(params["na"], params["nb"], params["chi"], 1.0)
+        f = open("tangenet and binodal", 'w+')
+        json.dump(result, f)
+        f.close()
+        f= open("tangenet and binodal", 'r')
+        self.wfile.write(f.read().encode('utf-8'))
+        return
     def do_GET(self):
         return SimpleHTTPRequestHandler.do_GET(self)
+
 def solve_for_tangent_and_binodal(NA, NB, chi, kT):
     x1 = Symbol('x1')
     x2 = Symbol('x2')

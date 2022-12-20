@@ -240,14 +240,18 @@
           type: "POST",
           data: `{"na":${NA2}, "nb":${NB2}, "chi":${chi2}}`,
           dataType: "json",
-          success: function(response) {
+          success: function(response, status, jqxhr) {
+            console.log(response)
             draw_flory_huggins(NA2, NB2, chi2, "tangent_and_binodal", response[0], response[1]);
             document.getElementById("refresh_button").disabled = false;
           },
-          error: function() {
+          
+          error: function(response, status, error) {
+            console.log(status, error)
             alert("Failed to communicate with server");
             document.getElementById("refresh_button").disabled = false;
           }
+          
         });
       }
     </script>
