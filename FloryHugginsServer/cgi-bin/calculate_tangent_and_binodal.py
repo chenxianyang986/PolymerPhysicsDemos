@@ -2,9 +2,21 @@
 
 import sys
 import json
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 from sympy.solvers import nsolve
 from sympy import Symbol, log
 
+hostName = "localhost"
+serverPort = 8000
+
+class MyServer(SimpleHTTPRequestHandler):
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        print("get here!")
+    def do_GET(self):
+        return SimpleHTTPRequestHandler.do_GET(self)
 def solve_for_tangent_and_binodal(NA, NB, chi, kT):
     x1 = Symbol('x1')
     x2 = Symbol('x2')
@@ -44,11 +56,20 @@ def solve_for_tangent_and_binodal(NA, NB, chi, kT):
 
     return [tangent, binodal]
 
-parameters = json.load(sys.stdin)
-result = solve_for_tangent_and_binodal(parameters["na"], parameters["nb"], parameters["chi"], 1.0)
-#with open("tangent_and_binodals", 'w') as f:
-#    print(result, file=f)
-print("Content-Type: application/json")
-print("Access-Control-Allow-Origin: *")
-print()
-print(json.dumps(result))
+if __name__ == "__main__":
+    webServer = HTTPServer((hostName, serverPort), MyServer)
+    print("Server started http://%s:%s" % (hostName, serverPort))
+    try:
+        webServer.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    '''
+    parameters = json.load(sys.stdin)
+    result = solve_for_tangent_and_binodal(parameters["na"], parameters["nb"], parameters["chi"], 1.0)
+    #with open("tangent_and_binodals", 'w') as f:
+    #    print(result, file=f)
+    print("Content-Type: application/json")
+    print("Access-Control-Allow-Origin: *")
+    print()
+    print(json.dumps(result))
+    '''

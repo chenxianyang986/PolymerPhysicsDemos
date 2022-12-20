@@ -236,8 +236,8 @@
         document.getElementById("refresh_button").disabled = true;
 
         $.ajax({
-          url: "http://172.31.72.243/cgi-bin/calculate_tangent_and_binodal.py",
-          type: "post",
+          url: "../cgi-bin/calculate_tangent_and_binodal.py",
+          type: "POST",
           data: `{"na":${NA2}, "nb":${NB2}, "chi":${chi2}}`,
           dataType: "json",
           success: function(response) {
