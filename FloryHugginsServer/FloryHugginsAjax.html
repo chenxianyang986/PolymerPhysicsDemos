@@ -9,10 +9,12 @@
       var NA = 100;
       var NB = 100;
       var chi = 0.02;
+      var T1 = 340; //kelvin
 
       var NA2 = 20;
       var NB2 = 10;
       var chi2 = 0.25;
+      var T2 = 340 // kelvin
 
       function handle_na() {
         const slider = document.getElementById("NA");
@@ -53,6 +55,11 @@
         chi2 = slider.value;
       }
 
+      function handle_T2() {
+        const slider = document.getElementById("T2");
+        T2 = slider.value;
+      }
+
       function F_mix(phi,NA,NB,chi,kT) {
         return kT*(chi*phi*(1.0-phi) + phi/NA*Math.log(phi) + (1.0-phi)/NB*Math.log(1.0-phi))
       }
@@ -81,7 +88,7 @@
         context.strokeStyle = save;
       }
 
-      function draw_flory_huggins(na, nb, c, canvas_id, tangent, binodal) {
+      function draw_flory_huggins(na, nb, c, canvas_id, tangent, binodal, T=1.0) {
         const canvas = document.getElementById(canvas_id);
         if (canvas.getContext) {
           
@@ -99,7 +106,7 @@
           for (let i = 0; i <= number_of_points_to_plot; i++)
           {
             x_values[i] = x_min + i * x_range / number_of_points_to_plot;
-            y_values[i] = F_mix(x_values[i], na, nb, c, 1.0);
+            y_values[i] = F_mix(x_values[i], na, nb, c, T);
           }
 
           const y_min = Math.min(...y_values);
@@ -238,11 +245,11 @@
         $.ajax({
           url: "../cgi-bin/calculate_tangent_and_binodal.py",
           type: "POST",
-          data: `{"na":${NA2}, "nb":${NB2}, "chi":${chi2}}`,
+          data: `{"na":${NA2}, "nb":${NB2}, "chi":${chi2}, "T":${T2}}`,
           dataType: "json",
           success: function(response, status, jqxhr) {
-            console.log(response)
-            draw_flory_huggins(NA2, NB2, chi2, "tangent_and_binodal", response[0], response[1]);
+            //console.log(response)
+            draw_flory_huggins(NA2, NB2, chi2, "tangent_and_binodal", response[0], response[1], T2 * 1.38 * 10 ** -23);
             document.getElementById("refresh_button").disabled = false;
           },
           
@@ -285,6 +292,8 @@
       <input type="number" id="NB2" name="NB2" value="10" min="1" max="300" oninput="handle_nb2()"></input>
       <label for="chi2">chi</label>
       <input type="number" id="chi2" name="chi2" value="0.25" min="-0.1" max="0.5" oninput="handle_chi2()"></input>
+      <label for="T">temperature(K)</label>
+      <input type="number" id="T2" name="T2" value="340" min="0" max="2000" oninput="handle_T2()"></input>
       <button id="refresh_button" type="button" onclick="refresh_button_clicked()">Refresh</button>
     </div>
     <canvas id="tangent_and_binodal" width="400" height="200"></canvas>

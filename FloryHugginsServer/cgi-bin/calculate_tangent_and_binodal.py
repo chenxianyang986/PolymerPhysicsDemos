@@ -4,10 +4,13 @@ import sys
 import json
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from sympy.solvers import nsolve
-from sympy import Symbol, log
+from phase_solve import find_guesses_for_common_tangents, find_binodal_points, find_spinodal_points
+from utils import F_mix_s
 
 hostName = "localhost"
 serverPort = 8000
+
+k = 1.38 * 10 ** -23
 
 class MyServer(SimpleHTTPRequestHandler):
     def do_POST(self):
@@ -16,7 +19,7 @@ class MyServer(SimpleHTTPRequestHandler):
         self.end_headers()
         length = int(self.headers['Content-Length'])
         params = json.loads(self.rfile.read(length))
-        result = solve_for_tangent_and_binodal(params["na"], params["nb"], params["chi"], 1.0)
+        result = solve_for_tangent_and_spinodal(params["na"], params["nb"], params["chi"], params["T"] * k)
         f = open("tangenet and binodal", 'w+')
         json.dump(result, f)
         f.close()
@@ -26,44 +29,15 @@ class MyServer(SimpleHTTPRequestHandler):
     def do_GET(self):
         return SimpleHTTPRequestHandler.do_GET(self)
 
-def solve_for_tangent_and_binodal(NA, NB, chi, kT):
-    x1 = Symbol('x1')
-    x2 = Symbol('x2')
-    y1 = Symbol('y1')
-    y2 = Symbol('y2')
-
-    def d_d_F_mix_s(phi,NA,NB,chi,kT):
-        return -2*chi + 1./(NA*phi) + 1./(NB - NB*phi)
-
-    def d_F_mix_s(phi,NA,NB,chi,kT):
-        return kT*(chi*(1.-2*phi) + 1/NA*log(phi)+ 1/NA -1/NB -1/NB*log(1-phi))
-
-    def F_mix_s(phi,NA,NB,chi,kT):
-        return kT*(chi*phi*(1.-phi) + phi/NA*log(phi) + (1.-phi)/NB*log(1-phi))
-
-    try:
-        sol = nsolve((
-        y1-F_mix_s(x1,NA,NB,chi,kT),
-        y2-F_mix_s(x2,NA,NB,chi,kT),
-        d_F_mix_s(x1,NA,NB,chi,kT)-d_F_mix_s(x2,NA,NB,chi,kT),
-        d_F_mix_s(x1,NA,NB,chi,kT)-(y2-y1)/(x2-x1)),
-        (x1,x2,y1,y2),(0.01,0.99,-0.01,-0.01))
-        tangent=[float(sol[0]),float(sol[1]),float(sol[2]),float(sol[3])]
-    except:
-        tangent=["nan", "nan", "nan", "nan"]
-
-    try:
-        sol = nsolve((
-        d_d_F_mix_s(x1,NA,NB,chi,kT),
-        d_d_F_mix_s(x2,NA,NB,chi,kT),
-        y1-F_mix_s(x1,NA,NB,chi,kT),
-        y2-F_mix_s(x2,NA,NB,chi,kT)),
-        (x1,x2,y1,y2),(1./4.,3./4.,-0.01,-0.01))
-        binodal=[float(sol[0]),float(sol[1]),float(sol[2]),float(sol[3])]
-    except:
-        binodal=["nan","nan", "nan", "nan"]
-
-    return [tangent, binodal]
+def solve_for_tangent_and_spinodal(NA, NB, chi, kT):
+    guesses = find_guesses_for_common_tangents(NA, NB, chi, kT)
+    input_guesses_y = [F_mix_s(i, NA, NB, chi, kT) for i in guesses]
+    input_guesses = tuple(guesses + input_guesses_y)
+    binodal = find_binodal_points(NA, NB, chi, kT, input_guesses)
+    spinodal_xvalues = find_spinodal_points(NA, NB, chi, kT)
+    spinodal_yvalues = [float(F_mix_s(i, NA, NB, chi, kT)) for i in spinodal_xvalues]
+    spinodal = spinodal_xvalues + spinodal_yvalues
+    return [binodal, spinodal]
 
 if __name__ == "__main__":
     webServer = HTTPServer((hostName, serverPort), MyServer)
@@ -72,13 +46,3 @@ if __name__ == "__main__":
         webServer.serve_forever()
     except KeyboardInterrupt:
         pass
-    '''
-    parameters = json.load(sys.stdin)
-    result = solve_for_tangent_and_binodal(parameters["na"], parameters["nb"], parameters["chi"], 1.0)
-    #with open("tangent_and_binodals", 'w') as f:
-    #    print(result, file=f)
-    print("Content-Type: application/json")
-    print("Access-Control-Allow-Origin: *")
-    print()
-    print(json.dumps(result))
-    '''
