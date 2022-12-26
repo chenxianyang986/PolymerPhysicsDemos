@@ -246,9 +246,9 @@
           url: "https://htb67qy4z6vp6ak46i6h5b6vki0idgso.lambda-url.us-west-2.on.aws/", //"../cgi-bin/calculate_tangent_and_binodal.py",
           type: "POST",
           data: JSON.stringify({"na": NA2, "nb":NB2, "chi":chi2, "T":T2}),
-          dataType: "json",
+          dataType: "jsonp",
           processData: false,
-          contentType: 'jsonp',
+          contentType: 'application/json',
           success: function(response, status, jqxhr) {
             console.log(response)
             draw_flory_huggins(NA2, NB2, chi2, "tangent_and_binodal", response[0], response[1], T2 * 1.38 * 10 ** -23);
