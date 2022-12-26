@@ -248,6 +248,7 @@
           data: JSON.stringify({"na": NA2, "nb":NB2, "chi":chi2, "T":T2}),
           dataType: "json",
           processData: false,
+          contentType: 'application/json',
           success: function(response, status, jqxhr) {
             console.log(response)
             draw_flory_huggins(NA2, NB2, chi2, "tangent_and_binodal", response[0], response[1], T2 * 1.38 * 10 ** -23);
