@@ -245,6 +245,7 @@
         $.ajax({
           url: "https://htb67qy4z6vp6ak46i6h5b6vki0idgso.lambda-url.us-west-2.on.aws/", //"../cgi-bin/calculate_tangent_and_binodal.py",
           type: "POST",
+          headers: {  'Access-Control-Allow-Origin':  '*'},
           data: JSON.stringify({"na": NA2, "nb":NB2, "chi":chi2, "T":T2}),
           dataType: "json",
           contentType: 'application/json',
