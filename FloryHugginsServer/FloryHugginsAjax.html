@@ -241,9 +241,9 @@
       function refresh_button_clicked()
       {
         document.getElementById("refresh_button").disabled = true;
-
+        queryString = `post?na=${NA2}&nb=${NB2}&chi=${chi2}&T=${T2}`
         $.ajax({
-          url: "https://htb67qy4z6vp6ak46i6h5b6vki0idgso.lambda-url.us-west-2.on.aws/post?na=100&nb=100", //"../cgi-bin/calculate_tangent_and_binodal.py",
+          url: "https://htb67qy4z6vp6ak46i6h5b6vki0idgso.lambda-url.us-west-2.on.aws/" + queryString, //../cgi-bin/calculate_tangent_and_binodal.py",
           type: "POST",
           data: {"na": NA2, "nb":NB2, "chi":chi2, "T":T2},
           dataType: "json",
